@@ -14,7 +14,7 @@ from src.core.weather import WeatherAPI
 dotenv_path = os.path.join(os.path.dirname(__file__), 'config', '.env')
 load_dotenv(dotenv_path)
 
-class FridayAssistant:
+class NovaAssistant:
     def __init__(self):
         self.api_key = os.environ.get("API_KEY")
         self.assistant = Assistant()
@@ -37,20 +37,20 @@ class FridayAssistant:
     def _display_welcome(self):
         """Display welcome ASCII art and message"""
         print("\n")
-        print("███████████ ███████████  ███████████████    █████████  █████ █████")
-        print("░███░░░░░░█░░███░░░░░███░░███░░███░░░░███  ███░░░░░███░░███ ░░███") 
-        print("░███   █ ░  ░███    ░███ ░███ ░███   ░░███░███    ░███ ░░███ ███")  
-        print("░███████    ░██████████  ░███ ░███    ░███░███████████  ░░█████")   
-        print("░███░░░█    ░███░░░░░███ ░███ ░███    ░███░███░░░░░███   ░░███")    
-        print("░███  ░     ░███    ░███ ░███ ░███    ███ ░███    ░███    ░███")    
-        print("█████       █████   ████████████████████  █████   █████   █████")   
-        print("░░░░░       ░░░░░   ░░░░░░░░░░░░░░░░░░░░  ░░░░░   ░░░░░   ░░░░░")
+        print(" ██████   █████    ███████    █████   █████   █████████  ")
+        print("░░██████ ░░███   ███░░░░░███ ░░███   ░░███   ███░░░░░███ ")
+        print(" ░███░███ ░███  ███     ░░███ ░███    ░███  ░███    ░███ ")
+        print(" ░███░░███░███ ░███      ░███ ░███    ░███  ░███████████ ")
+        print(" ░███ ░░██████ ░███      ░███ ░░███   ███   ░███░░░░░███ ")
+        print(" ░███  ░░█████ ░░███     ███   ░░░█████░    ░███    ░███ ")
+        print(" █████  ░░█████ ░░░███████░      ░░███      █████   █████ ")
+        print(" ░░░░░    ░░░░░    ░░░░░░░         ░░░      ░░░░░   ░░░░░ ")
         print("\n")
         print("="*50)
-        print("Welcome to FRIDAY - Your Python-Powered AI Assistant!")
-        print("Remember to start your commands with 'Friday'")
-        print("For example: 'Friday tell me the time'")
-        print("Type 'Friday help' for a list of available commands")
+        print("Welcome to NOVA - Your Python-Powered AI Assistant!")
+        print("Remember to start your commands with 'Nova'")
+        print("For example: 'Nova tell me the time'")
+        print("Type 'Nova help' for a list of available commands")
         print("="*50)
         print("\n")
 
@@ -80,7 +80,7 @@ class FridayAssistant:
             self.voice.speak("Goodbye!")
         except:
             pass
-        print("\nThank you for using FRIDAY Assistant!")
+        print("\nThank you for using NOVA Assistant!")
 
     def _handle_open(self, command: str) -> str:
         """Handle both website and app opening commands"""
@@ -117,7 +117,7 @@ class FridayAssistant:
         # Extract the mathematical expression
         match = re.search(r'calculate\s+(.*)', command, re.IGNORECASE)
         if not match:
-            return "Please provide a calculation (e.g., 'Friday calculate 2 + 2')"
+            return "Please provide a calculation (e.g., 'Nova calculate 2 + 2')"
         
         expression = match.group(1).strip()
         try:
@@ -130,7 +130,7 @@ class FridayAssistant:
         # Extract city name
         match = re.search(r'weather\s+(?:of\s+|in\s+)?([a-zA-Z\s]+)', command, re.IGNORECASE)
         if not match:
-            return "Please specify a city (e.g., 'Friday tell me the weather of London')"
+            return "Please specify a city (e.g., 'Nova tell me the weather of London')"
         
         city = match.group(1).strip()
         try:
@@ -145,6 +145,32 @@ class FridayAssistant:
     def _handle_exit(self, _: str) -> str:
         sys.exit(0)
 
+    # def process_command(self, command: str) -> Optional[str]:
+    #     """Process user commands and return appropriate response"""
+    #     if not command:
+    #         return None
+            
+    #     command = command.lower().strip()
+        
+    #     # Handle help command explicitly
+    #     if "help" in command:
+    #         return self._handle_help(command)
+            
+    #     # Handle exit commands
+    #     if command in ['exit', 'quit', 'bye']:
+    #         return self._handle_exit(command)
+            
+    #     if any(word in command for word in ['thanks', 'thank you']):
+    #         return self._handle_thanks(command)
+            
+    #     # Match command to handler
+    #     for cmd_key, handler in self.commands.items():
+    #         if cmd_key in command:
+    #             return handler(command)
+        
+    #     return ("I'm sorry, I didn't understand that command. "
+    #             "Please say 'help' to see available commands.")
+
     def process_command(self, command: str) -> Optional[str]:
         """Process user commands and return appropriate response"""
         if not command:
@@ -152,13 +178,14 @@ class FridayAssistant:
             
         command = command.lower().strip()
         
+        # Handle exit commands first
+        if command in ['exit', 'quit', 'bye']:
+            self.cleanup()
+            sys.exit(0)
+            
         # Handle help command explicitly
         if "help" in command:
             return self._handle_help(command)
-            
-        # Handle exit commands
-        if command in ['exit', 'quit', 'bye']:
-            return self._handle_exit(command)
             
         if any(word in command for word in ['thanks', 'thank you']):
             return self._handle_thanks(command)
@@ -169,7 +196,7 @@ class FridayAssistant:
                 return handler(command)
         
         return ("I'm sorry, I didn't understand that command. "
-                "Please say 'help' to see available commands.")
+                "Please say 'Nova help' to see available commands.")
     
     def choose_input_method(self):
         """Allow the user to select input method: text or speak."""
@@ -190,7 +217,7 @@ class FridayAssistant:
     def run(self):
         """Main loop for the assistant"""
         self._display_welcome()  # Display ASCII art and welcome message
-        self.voice.speak("Hello, I am FRIDAY, your Python-Powered AI Assistant")
+        self.voice.speak("Hello, I am Nova, your Python-Powered AI Assistant")
         # input_method = self.voice.get_input_method()
         # input_method = self.typeHandler.get_input
         input_method = self.choose_input_method()
@@ -212,7 +239,7 @@ class FridayAssistant:
 
 def main():
     try:
-        assistant = FridayAssistant()
+        assistant = NovaAssistant()
         assistant.run()
     except Exception as e:
         print(f"\nFatal error: {e}")

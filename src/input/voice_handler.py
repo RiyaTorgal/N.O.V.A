@@ -21,7 +21,7 @@ class VoiceAssistant:
             choice = input("\nChoose input method (type/speak): ").lower().strip()
             
             if choice == InputMethod.SPEAK.value:
-                self.speak("Now listening. Remember to start your command with 'Friday'")
+                self.speak("Now listening. Remember to start your command with 'Nova'")
                 return self.listen
             elif choice == InputMethod.TYPE.value:
                 print(self.typed_handler._show_help())
@@ -40,7 +40,7 @@ class VoiceAssistant:
                 
                 is_valid, command = self.parser.parse_command(query)
                 if not is_valid:
-                    self.speak("Please start your command with 'Friday'")
+                    self.speak("Please start your command with 'Nova'")
                     return ""
                 
                 normalized_command = self.parser.normalize_command(command)

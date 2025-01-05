@@ -16,12 +16,13 @@ class CommandParser:
     @staticmethod
     def parse_command(text: str) -> tuple[bool, str]:
         """
-        Parse command to check if it starts with 'Friday' and extract the actual command
+        Parse command to check if it starts with 'Nova' and extract the actual command
         Returns: (is_valid, command)
         """
         text = text.lower().strip()
-        if text.startswith('friday'):
-            return True, text[6:].strip()  # Remove 'friday' and extra spaces
+        if text.startswith('nova'):
+            # Get everything after 'nova' and strip whitespace
+            return True, text[4:].strip()
         return False, text
 
     @staticmethod
@@ -75,14 +76,14 @@ class TypedInputHandler:
 
     def _show_help(self) -> str:
         return """
-Available Commands (start with 'Friday'):
+Available Commands (start with 'Nova'):
 ---------------------------------------
-- Friday open youtube.com         : Opens specified website
-- Friday open notepad            : Opens specified application
-- Friday tell me the time        : Shows current time
-- Friday tell me the date        : Shows current date
-- Friday calculate 2 + 2         : Calculates mathematical expression
-- Friday tell me the weather of [city] : Shows weather for specified city
+- Nova open youtube.com        : Opens specified website
+- Nova open notepad            : Opens specified application
+- Nova tell me the time        : Shows current time
+- Nova tell me the date        : Shows current date
+- Nova calculate 2 + 2         : Calculates mathematical expression
+- Nova tell me the weather of [city] : Shows weather for specified city
 
 Additional Commands:
 ------------------
@@ -93,7 +94,7 @@ Additional Commands:
 
 Tips:
 ----
-- Always start your commands with 'Friday'
+- Always start your commands with 'Nova'
 - Speak clearly and naturally when using voice commands
 - Type commands in a clear format when using text input
 """
@@ -105,21 +106,21 @@ Different function I can perform till date:
 -------------------------------------------
 1. Tell you current Date and/or Time
 description: "Get current time",
-example: "Friday tell me the time"
+example: "Nova tell me the time"
 -------------------------------------------
 2. Tell you the currect weather
 description: "Get weather for a specific city",
-example: "Friday tell me the weather of Pune",
+example: "Nova tell me the weather of Pune",
 params: ["city name"]
 -------------------------------------------
 3. Calculate any mathematical expression
 description: "Perform mathematical calculations",
-example: "Friday calculate 2 + 2",
+example: "Nova calculate 2 + 2",
 supports: ["addition", "subtraction", "multiplication", "division"]
 -------------------------------------------
 4. I can open any desktop app or website on internet
 "description": "Open websites or applications",
-examples: "Friday open youtube.com" or "Friday open notepad"
+examples: "Nova open youtube.com" or "Nova open notepad"
 -------------------------------------------
 """
 
@@ -150,10 +151,10 @@ examples: "Friday open youtube.com" or "Friday open notepad"
             if user_input.lower() in self.commands:
                 return self.commands[user_input.lower()]()
             
-            # Check if command starts with "Friday"
+            # Check if command starts with "Nova"
             is_valid, command = self.parser.parse_command(user_input)
             if not is_valid:
-                return "Please start your command with 'Friday' (e.g., 'Friday tell me the time')"
+                return "Please start your command with 'Nova' (e.g., 'Nova tell me the time')"
             
             # Normalize command
             normalized_command = self.parser.normalize_command(command)

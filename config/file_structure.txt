@@ -1,6 +1,6 @@
 File/Folder structure of the project:
 
-    friday/
+    Nova/
     │
     ├── src/
     │   ├── __init__.py
