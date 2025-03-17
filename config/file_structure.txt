@@ -2,34 +2,48 @@ File/Folder structure of the project:
 
     Nova/
     │
+    ├── config/
+    │   ├── .env                        # Environmental variables
+    │   ├── .env.example                # Example .env file
+    |   └── file_structure.txt          # Detailed description of file structure of the project
+    |
+    ├── dB-Schema/
+    │   ├── Note Db Schema              # Database Schema for Note-taking functionality
+    │   ├── Login-Signup Db Schema      # Database Schema for Login and Signup functionality
+    |   └── Command History Db Schema   # Database Schema for Command history tracking functionality
+    |
     ├── src/
     │   ├── __init__.py
     │   ├── core/
     │   │   ├── __init__.py
-    │   │   ├── assistant.py        # Main assistant logic
-    │   │   ├── weather.py          # Weather-related functionality
-    │   │   └── exceptions.py       # Custom exception classes
+    │   │   ├── assistant.py            # Main assistant logic
+    │   │   └── exceptions.py           # Custom exception classes
+    |   |
+    │   ├── dB/
+    │   │   ├── __init__.py
+    │   │   ├── config.py               # Database configuration
+    │   │   ├── database.py             # Database connection and management
+    │   │   ├── models.py               # Database creation queries
+    │   │   └── schema.sql              # Database setup
     │   │
     │   ├── input/
     │   │   ├── __init__.py
-    │   │   ├── voice_handler.py    # Voice input handling
-    │   │   └── text_handler.py     # Text input handling
+    │   │   ├── voice_handler.py        # Voice input handling
+    │   │   └── text_handler.py         # Text input handling
     |   |
     |   ├── sevices/
     │   │   ├── __init__.py
-    │   │   └── notes.py            # Notes creation handling
+    │   │   ├── command_history.py      # Command history implementation
+    │   │   ├── notes.py                # Notes creation handling
+    │   │   └── weather.py              # Weather-related functionality
     │   │
     │   └── utils/
     │       ├── __init__.py
-    │       └── input_history.py    # Input history tracking
+    │       └── input_history.py        # Input history tracking
     │
-    ├── main.py
-    ├── config/
-    │   ├── .env
-    │   ├── .env.example            # Environment variables
-    |   └── file_structure.txt
-    │
-    ├── requirements.txt
-    ├── README.md
-    ├── .gitignore
-    └── LICENSE        
+    ├── main.py                         # Main executable file
+    ├── init_db.py                      # File to run the database initialization
+    ├── requirements.txt                # Contains required packages
+    ├── README.md                       # GitHub README file
+    ├── .gitignore                      # Files to be ignored while commit command
+    └── LICENSE                         # Information about the LICENSE
