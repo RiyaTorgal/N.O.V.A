@@ -5,7 +5,6 @@ import re
 import requests
 from typing import Tuple
 from src.core.exceptions import AssistantError, AppOperationError,WeatherAPIError
-from src.core.weather import WeatherAPI
 from src.input.text_handler import TypedInputHandler
 from src.input.voice_handler import VoiceAssistant
 
