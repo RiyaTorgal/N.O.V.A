@@ -9,7 +9,7 @@ from src.core.exceptions import AppOperationError, AssistantError, WeatherAPIErr
 from src.core.assistant import Assistant
 from src.input.text_handler import TypedInputHandler
 from src.input.voice_handler import VoiceAssistant
-from src.core.weather import WeatherAPI
+from src.services.weather import WeatherAPI
 
 dotenv_path = os.path.join(os.path.dirname(__file__), 'config', '.env')
 load_dotenv(dotenv_path)
