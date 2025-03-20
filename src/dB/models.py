@@ -3,40 +3,12 @@ from datetime import datetime
 from typing import Optional, Dict, List
 
 @dataclass
-class User:
-    user_id: int
-    username: str
-    email: str
-    password_hash: str
-    created_at: datetime
-    registration_date: datetime
-    updated_at: Optional[datetime] = None
-    last_login: Optional[datetime] = None
-
-@dataclass
 class CommandEntry:
     history_id: int
-    user_id: int
     command: str
     timestamp: datetime
     execution_status: str
     context: Optional[Dict] = None
-
-# @dataclass
-# class Session:
-#     id: str
-#     user_id: int
-#     session_token: str
-#     created_at: datetime
-#     expires_at: datetime
-
-# @dataclass
-# class PasswordReset:
-#     id: str
-#     user_id: int
-#     reset_token: str
-#     requested_at: datetime
-#     expires_at: datetime
 
 @dataclass
 class Category:
@@ -52,7 +24,6 @@ class Tag:
 @dataclass
 class Note:
     id: int
-    user_id: int
     title: str
     content: str
     created_at: datetime
