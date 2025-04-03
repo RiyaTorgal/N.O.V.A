@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 import signal
 import sys
@@ -10,6 +11,8 @@ from src.core.assistant import Assistant
 from src.input.text_handler import TypedInputHandler
 from src.input.voice_handler import VoiceAssistant
 from src.services.weather import WeatherAPI
+from src.utils.command_history import DatabaseCommandHistory
+from src.dB.database import Database
 
 dotenv_path = os.path.join(os.path.dirname(__file__), 'config', '.env')
 load_dotenv(dotenv_path)
@@ -31,8 +34,35 @@ class NovaAssistant:
             "thanks": self._handle_thanks,
             "help": self._handle_help,
             "functions": self._handle_function_list,
+            "history": self._handle_history,
+            # "history start": self._handle_history_start,
+            # "history stop": self._handle_history_stop,
+            "search": self._handle_search_history,
+            "clear history": self._handle_clear_history,
         }
+        self.db_config = {
+            'host': os.environ.get("DB_HOST", "localhost"),
+            'user': os.environ.get("DB_USER", "root"),
+            'password': os.environ.get("DB_PASSWORD", ""),
+            'database': os.environ.get("DB_DATABASE", "nova"),
+            'port': int(os.environ.get("DB_PORT", "3306"))
+        }
+        self.db = Database()
+        self.command_history = DatabaseCommandHistory(self.db_config,self.db)
+        self.initialized = False
         self.setup_signal_handlers()
+
+    def initialize_database(self):
+        """Initialize the database schema"""
+        self.db = Database()  # Store as an instance variable
+        success = self.db.initialize_database()
+            
+        if success:
+            print("Database initialization complete!")
+        else:
+            print("Failed to initialize database.")
+            
+        return success
 
     def _display_welcome(self):
         """Display welcome ASCII art and message"""
@@ -62,6 +92,53 @@ class NovaAssistant:
     def _handle_function_list(self, _: str) -> str:
         """Display functionalities of the assistant"""
         return self.typeHandler.display_functions()
+    
+    def _handle_history(self, _: str) -> str:
+        """Display command history"""
+        history = self.command_history.get_history()
+        if not history:
+            return "No command history found."
+        else:
+            result = "Command History:\n"
+            for i, entry in enumerate(history):
+                timestamp = entry.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            result += f"{i+1}: [{timestamp}] {entry.command} ({entry.execution_status})\n"
+            return result
+    
+    def _handle_history_start(self, _: str) -> str:
+        """Start recording command history"""
+        self.command_history.start_recording()
+        return "Command history recording started."
+    
+    def _handle_history_stop(self, _: str) -> str:
+        """Stop recording command history"""
+        self.command_history.stop_recording()
+        return "Command history recording stopped."
+    
+    def _handle_search_history(self, command: str) -> str:
+        """Search command history"""
+        match = re.search(r'search\s+(.*)', command, re.IGNORECASE)
+        if not match:
+            return "Please provide a search term (e.g., 'Nova search weather')"
+        
+        search_term = match.group(1).strip()
+        results = self.command_history.search_history(search_term)
+        
+        if not results:
+            return f"No results found for '{search_term}'."
+        else:
+            result = f"Search results for '{search_term}':\n"
+            for i, entry in enumerate(results):
+                timestamp = entry.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            result += f"{i+1}: [{timestamp}] {entry.command}\n"
+            return result
+    
+    def _handle_clear_history(self, _: str) -> str:
+        """Clear command history"""
+        if self.command_history.clear_history():
+            return "Command history cleared."
+        else:
+            return "Failed to clear command history."
 
     def setup_signal_handlers(self):
         """Setup handlers for graceful shutdown"""
@@ -77,6 +154,10 @@ class NovaAssistant:
     def cleanup(self):
         """Cleanup resources before shutdown"""
         try:
+            if hasattr(self, 'db'):
+                self.db.close()
+                print("Database connection closed.")
+            self._handle_history_stop()
             self.voice.speak("Goodbye!")
         except:
             pass
@@ -145,32 +226,6 @@ class NovaAssistant:
     def _handle_exit(self, _: str) -> str:
         sys.exit(0)
 
-    # def process_command(self, command: str) -> Optional[str]:
-    #     """Process user commands and return appropriate response"""
-    #     if not command:
-    #         return None
-            
-    #     command = command.lower().strip()
-        
-    #     # Handle help command explicitly
-    #     if "help" in command:
-    #         return self._handle_help(command)
-            
-    #     # Handle exit commands
-    #     if command in ['exit', 'quit', 'bye']:
-    #         return self._handle_exit(command)
-            
-    #     if any(word in command for word in ['thanks', 'thank you']):
-    #         return self._handle_thanks(command)
-            
-    #     # Match command to handler
-    #     for cmd_key, handler in self.commands.items():
-    #         if cmd_key in command:
-    #             return handler(command)
-        
-    #     return ("I'm sorry, I didn't understand that command. "
-    #             "Please say 'help' to see available commands.")
-
     def process_command(self, command: str) -> Optional[str]:
         """Process user commands and return appropriate response"""
         if not command:
@@ -182,6 +237,13 @@ class NovaAssistant:
         if command in ['exit', 'quit', 'bye']:
             self.cleanup()
             sys.exit(0)
+        
+        # Record the command in history before processing
+        try:
+            context = {"execution_time": datetime.now().isoformat()}
+            self.command_history.add_command(command, "initiated", context)
+        except Exception as e:
+            print(f"Failed to record command: {e}")
             
         # Handle help command explicitly
         if "help" in command:
@@ -189,12 +251,30 @@ class NovaAssistant:
             
         if any(word in command for word in ['thanks', 'thank you']):
             return self._handle_thanks(command)
+        
+        # Handle history commands
+        if command == "history":
+            return self._handle_history(command)
+        elif command == "history start":
+            return self._handle_history_start(command)
+        elif command == "history stop":
+            return self._handle_history_stop(command)
+        elif command == "clear history":
+            return self._handle_clear_history(command)
+        elif command.startswith("search "):
+            return self._handle_search_history(command)
             
         # Match command to handler
         for cmd_key, handler in self.commands.items():
             if cmd_key in command:
-                return handler(command)
-        
+                response = handler(command)
+                # Update command status to completed
+                try:
+                    self.command_history.update_command_status(command, "completed")
+                except Exception as e:
+                    print(f"Failed to update command status: {e}")
+                return response
+
         return ("I'm sorry, I didn't understand that command. "
                 "Please say 'Nova help' to see available commands.")
     
@@ -216,10 +296,11 @@ class NovaAssistant:
 
     def run(self):
         """Main loop for the assistant"""
+        self._handle_history_start("")
+        self.initialize_database()
+        self.command_history.connect()
         self._display_welcome()  # Display ASCII art and welcome message
         self.voice.speak("Hello, I am Nova, your Python-Powered AI Assistant")
-        # input_method = self.voice.get_input_method()
-        # input_method = self.typeHandler.get_input
         input_method = self.choose_input_method()
         
         while True:
