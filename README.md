@@ -26,7 +26,7 @@
 
 - Supports two different user input modes: text or speech. Users can write or speak into the mic.
 - Provides vocal and text responses.
-- Keeps commands history in MySQL database via XAMPP.
+- Keeps command history in MySQL database via XAMPP.
 
 ## Getting Started
 
@@ -47,11 +47,7 @@ N.O.V.A uses third-party APIs for speech recognition, web searches, weather fore
    ```bash
    cd .\N.O.V.A\
    ```
-3. **Initalize the database**  
 
-   ```bash
-   python -u "your\Folder\Location\init_db.py"
-   ```
 ### Start the Assistant
 <div>
   <img src="https://github.com/RiyaTorgal/N.O.V.A/blob/main/img/NOVA_Output.png" width="800" />
