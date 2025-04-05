@@ -2,6 +2,7 @@
 CREATE TABLE IF NOT EXISTS command_history (
     history_id INT AUTO_INCREMENT PRIMARY KEY,
     command VARCHAR(255) NOT NULL,
+    response TEXT,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     execution_status VARCHAR(50) NOT NULL,
     context JSON

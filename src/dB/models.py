@@ -8,6 +8,7 @@ class CommandEntry:
     command: str
     timestamp: datetime
     execution_status: str
+    response: Optional[str] = None
     context: Optional[Dict] = None
 
 @dataclass

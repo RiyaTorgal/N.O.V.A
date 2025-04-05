@@ -9,7 +9,6 @@ File/Folder structure of the project:
     │
     ├── dB-Schema/
     │   ├── Note Db Schema              # Database Schema for Note-taking functionality
-    │   ├── Login-Signup Db Schema      # Database Schema for Login and Signup functionality
     │   └── Command History Db Schema   # Database Schema for Command history tracking functionality
     │
     ├── src/

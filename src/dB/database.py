@@ -85,3 +85,64 @@ class Database:
         except Exception as e:
             print(f"Unexpected error initializing database: {e}")
             return False
+    
+    def save_command_with_response(self, command, response, execution_status, context=None):
+        """Save command and its response to the database"""
+        query = """
+        INSERT INTO command_history (command, response, execution_status, context)
+        VALUES (%s, %s, %s, %s)
+        """
+        
+        # Convert context dict to JSON string if provided
+        context_json = None
+        if context:
+            import json
+            context_json = json.dumps(context)
+            
+        params = (command, response, execution_status, context_json)
+        
+        cursor = self.execute_query(query, params)
+        if cursor:
+            command_id = cursor.lastrowid
+            cursor.close()
+            return command_id
+        return None
+
+    def get_command_history_with_responses(self, limit=100):
+        """Get command history with responses, most recent first"""
+        query = """
+        SELECT history_id, command, response, timestamp, execution_status, context
+        FROM command_history
+        ORDER BY timestamp DESC
+        LIMIT %s
+        """
+        
+        results = self.fetch_all(query, (limit,))
+        if results:
+            from .models import CommandEntry
+            import json
+            
+            command_history = []
+            for row in results:
+                history_id, command, response, timestamp, status, context_json = row
+                
+                # Parse context JSON if available
+                context = None
+                if context_json:
+                    try:
+                        context = json.loads(context_json)
+                    except json.JSONDecodeError:
+                        pass
+                
+                entry = CommandEntry(
+                    history_id=history_id,
+                    command=command,
+                    response=response,
+                    timestamp=timestamp,
+                    execution_status=status,
+                    context=context
+                )
+                command_history.append(entry)
+            
+            return command_history
+        return []

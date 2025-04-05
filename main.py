@@ -48,7 +48,7 @@ class NovaAssistant:
             'port': int(os.environ.get("DB_PORT", "3306"))
         }
         self.db = Database()
-        self.command_history = DatabaseCommandHistory(self.db_config,self.db)
+        self.command_history = DatabaseCommandHistory(self.db_config, self.db)
         self.initialized = False
         self.setup_signal_handlers()
 
@@ -102,7 +102,9 @@ class NovaAssistant:
             result = "Command History:\n"
             for i, entry in enumerate(history):
                 timestamp = entry.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-            result += f"{i+1}: [{timestamp}] {entry.command} ({entry.execution_status})\n"
+                # Include response in history display if available
+                response_info = f"\nResponse: {entry.response}" if entry.response else ""
+                result += f"{i+1}: [{timestamp}] {entry.command} ({entry.execution_status}){response_info}\n"
             return result
     
     def _handle_history_start(self, _: str) -> str:
@@ -130,7 +132,9 @@ class NovaAssistant:
             result = f"Search results for '{search_term}':\n"
             for i, entry in enumerate(results):
                 timestamp = entry.timestamp.strftime("%Y-%m-%d %H:%M:%S")
-            result += f"{i+1}: [{timestamp}] {entry.command}\n"
+                # Include response in search results if available
+                response_info = f"\nResponse: {entry.response}" if entry.response else ""
+                result += f"{i+1}: [{timestamp}] {entry.command}{response_info}\n"
             return result
     
     def _handle_clear_history(self, _: str) -> str:
@@ -247,36 +251,60 @@ class NovaAssistant:
             
         # Handle help command explicitly
         if "help" in command:
-            return self._handle_help(command)
+            response = self._handle_help(command)
+            self.save_response(command, response, "completed")
+            return response
             
         if any(word in command for word in ['thanks', 'thank you']):
-            return self._handle_thanks(command)
+            response = self._handle_thanks(command)
+            self.save_response(command, response, "completed")
+            return response
         
         # Handle history commands
         if command == "history":
-            return self._handle_history(command)
+            response = self._handle_history(command)
+            self.save_response(command, response, "completed")
+            return response
         elif command == "history start":
-            return self._handle_history_start(command)
+            response = self._handle_history_start(command)
+            self.save_response(command, response, "completed")
+            return response
         elif command == "history stop":
-            return self._handle_history_stop(command)
+            response = self._handle_history_stop(command)
+            self.save_response(command, response, "completed")
+            return response
         elif command == "clear history":
-            return self._handle_clear_history(command)
+            response = self._handle_clear_history(command)
+            self.save_response(command, response, "completed")
+            return response
         elif command.startswith("search "):
-            return self._handle_search_history(command)
+            response = self._handle_search_history(command)
+            self.save_response(command, response, "completed")
+            return response
             
         # Match command to handler
         for cmd_key, handler in self.commands.items():
             if cmd_key in command:
                 response = handler(command)
-                # Update command status to completed
-                try:
-                    self.command_history.update_command_status(command, "completed")
-                except Exception as e:
-                    print(f"Failed to update command status: {e}")
+                # Save the response and update command status
+                self.save_response(command, response, "completed")
                 return response
 
-        return ("I'm sorry, I didn't understand that command. "
+        # Handle unrecognized commands
+        response = ("I'm sorry, I didn't understand that command. "
                 "Please say 'Nova help' to see available commands.")
+        self.save_response(command, response, "failed")
+        return response
+    
+    def save_response(self, command: str, response: str, status: str):
+        """Save response and update command status"""
+        try:
+            # Update both status and response
+            self.command_history.update_command_status(command, status)
+            # Add new method to save response (to be implemented in command_history class)
+            self.command_history.save_response(command, response)
+        except Exception as e:
+            print(f"Failed to save response: {e}")
     
     def choose_input_method(self):
         """Allow the user to select input method: text or speak."""
