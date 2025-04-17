@@ -84,6 +84,8 @@ Available Commands (start with 'Nova'):
 - Nova tell me the date        : Shows current date
 - Nova calculate 2 + 2         : Calculates mathematical expression
 - Nova tell me the weather of [city] : Shows weather for specified city
+- Nova ask [question]          : Search for information using Gemini AI
+- Nova define [term]           : Get a definition of a term using Gemini AI
 
 Additional Commands:
 ------------------
@@ -119,8 +121,12 @@ example: "Nova calculate 2 + 2",
 supports: ["addition", "subtraction", "multiplication", "division"]
 -------------------------------------------
 4. I can open any desktop app or website on internet
-"description": "Open websites or applications",
+description: "Open websites or applications",
 examples: "Nova open youtube.com" or "Nova open notepad"
+-------------------------------------------
+5. I can answer your search queries using gemini AI
+description: "Answer search queries using Gemini AI",
+examples: "Nova ask what is artificial intelligence" or "Nova define Blockchain"
 -------------------------------------------
 """
 

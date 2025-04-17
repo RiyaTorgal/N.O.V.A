@@ -11,6 +11,7 @@ from src.core.assistant import Assistant
 from src.input.text_handler import TypedInputHandler
 from src.input.voice_handler import VoiceAssistant
 from src.services.weather import WeatherAPI
+from src.services.ai_implementation import GeminiSearch
 from src.utils.command_history import DatabaseCommandHistory
 from src.dB.database import Database
 
@@ -24,6 +25,16 @@ class NovaAssistant:
         self.typeHandler = TypedInputHandler()
         self.voice = VoiceAssistant()
         self.weather = WeatherAPI(self.api_key)
+        self.gemini_api_key = os.environ.get("GEMINI")  # Make sure you have a GEMINI env variable
+        try:
+            if self.gemini_api_key:
+                self.gemini_search = GeminiSearch(self.gemini_api_key)
+            else:
+                print("Warning: Gemini API key not found. AI search functionality will be disabled.")
+                self.gemini_search = None
+        except Exception as e:
+            print(f"Error initializing Gemini search: {e}")
+            self.gemini_search = None
         self.commands = {
             "time": self._handle_time,
             "date": self._handle_date,
@@ -35,10 +46,10 @@ class NovaAssistant:
             "help": self._handle_help,
             "functions": self._handle_function_list,
             "history": self._handle_history,
-            # "history start": self._handle_history_start,
-            # "history stop": self._handle_history_stop,
             "search": self._handle_search_history,
             "clear history": self._handle_clear_history,
+            "ask": self._handle_ai_query,
+            "define": self._handle_define,
         }
         self.db_config = {
             'host': os.environ.get("DB_HOST", "localhost"),
@@ -63,6 +74,57 @@ class NovaAssistant:
             print("Failed to initialize database.")
             
         return success
+    
+    def _handle_ai_query(self, command: str) -> str:
+        """Handle AI search queries using Gemini"""
+        if not self.gemini_search:
+            return "Gemini AI is not initialized. Please check your API key."
+            
+        # Extract the query from the command
+        match = re.search(r'ask\s+(.*)', command, re.IGNORECASE)
+        if not match:
+            return "Please provide a question to ask (e.g., 'Nova ask what is artificial intelligence')"
+        
+        query = match.group(1).strip()
+        try:
+            # Get both a short snippet and a full answer
+            result = self.gemini_search.quick_answer(query)
+            
+            if "error" in result:
+                return result["error"]
+                
+            # First provide the short snippet followed by the option to hear more
+            self.voice.speak(f"Quick answer: {result['snippet']}")
+            quick_answer = f"Quick answer: {result['snippet']}"
+            # print(f"\nQuick answer: {result['snippet']}")
+            
+            # Ask if the user wants more details
+            print("\nWould you like to hear the full answer? (yes/no)")
+            user_choice = input().lower().strip()
+            
+            if user_choice in ["yes", "y"]:
+                return f"Full answer: {result['full_answer']}"
+            else:
+                return quick_answer + "Okay, ask me if you have any other questions."
+        except Exception as e:
+            return f"Error processing your question: {str(e)}"
+    
+    def _handle_define(self, command: str) -> str:
+        """Handle term definition requests using Gemini"""
+        if not self.gemini_search:
+            return "Gemini AI is not initialized. Please check your API key."
+            
+        # Extract the term from the command
+        match = re.search(r'define\s+(.*)', command, re.IGNORECASE)
+        if not match:
+            return "Please provide a term to define (e.g., 'Nova define artificial intelligence')"
+        
+        term = match.group(1).strip()
+        try:
+            definition = self.gemini_search.define_term(term)
+            return f"Definition of '{term}': {definition}"
+        except Exception as e:
+            return f"Error defining the term: {str(e)}"
 
     def _display_welcome(self):
         """Display welcome ASCII art and message"""
