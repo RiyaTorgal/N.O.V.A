@@ -19,6 +19,10 @@
 - Tells Current date (e.g., `Nova tell me the date`)
 - Performs Basic calculations (e.g., `Nova calculate 2 + 2`)
 - Tells Current weather of a city (e.g., `Nova tell me the weather of Pune`)
+- Can answer search queries (e.g., `Nova ask what is artificial intelligence`)
+- Can define a specified term (e.g., `Nova define Blockchain`)
+- Clears history (e.g., `Nova clear history`)
+- Searches specific command (e.g., `Nova search weather`)
 - Help command prints all skills with descriptions (e.g., `Nova help`)
 - Tells what functions it can perform (e.g., `Nova functions`)
 
@@ -35,6 +39,7 @@
 N.O.V.A uses third-party APIs for speech recognition, web searches, weather forecasting, etc. All the following APIs offer free non-commercial API calls. Subscribe to the following APIs to access free keys:
 
 1. **OpenWeatherMap**: API for weather forecasting.
+2. **Gemini API**: API for search questions.
 
 ### Setup N.O.V.A in Windows
 
