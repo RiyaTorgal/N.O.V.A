@@ -14,6 +14,11 @@ from src.services.weather import WeatherAPI
 from src.services.ai_implementation import GeminiSearch
 from src.utils.command_history import DatabaseCommandHistory
 from src.dB.database import Database
+from src.utils.stats import SystemMonitor
+# from src.utils.stats import Logger
+# from logs import NovaLogger as Logger
+# import logging
+
 
 dotenv_path = os.path.join(os.path.dirname(__file__), 'config', '.env')
 load_dotenv(dotenv_path)
@@ -22,10 +27,14 @@ class NovaAssistant:
     def __init__(self):
         self.api_key = os.environ.get("API_KEY")
         self.assistant = Assistant()
+        self.stats = SystemMonitor()
         self.typeHandler = TypedInputHandler()
         self.voice = VoiceAssistant()
         self.weather = WeatherAPI(self.api_key)
         self.gemini_api_key = os.environ.get("GEMINI")  # Make sure you have a GEMINI env variable
+        # self.logger = Logger(log_to_console=True, log_to_file=True, log_file="nova_logs.txt")
+        self.input_mode = "TEXT"  # Default input mode
+        self.speech_enabled = False
         try:
             if self.gemini_api_key:
                 self.gemini_search = GeminiSearch(self.gemini_api_key)
@@ -126,7 +135,7 @@ class NovaAssistant:
         except Exception as e:
             return f"Error defining the term: {str(e)}"
 
-    def _display_welcome(self):
+    def _display_welcome(self, debug_log=None, info_log=None, warn_log=None, error_log=None, refresh_console=True):
         """Display welcome ASCII art and message"""
         print("\n")
         print(" ██████   █████    ███████    █████   █████   █████████  ")
@@ -137,14 +146,35 @@ class NovaAssistant:
         print(" ░███  ░░█████ ░░███     ███   ░░░█████░    ░███    ░███ ")
         print(" █████  ░░█████ ░░░███████░      ░░███      █████   █████ ")
         print(" ░░░░░    ░░░░░    ░░░░░░░         ░░░      ░░░░░   ░░░░░ ")
-        print("\n")
+        print("NOTE: Ctrl + C if you want to quit")
         print("="*50)
-        print("Welcome to NOVA - Your Python-Powered AI Assistant!")
-        print("Remember to start your commands with 'Nova'")
-        print("For example: 'Nova tell me the time'")
-        print("Type 'Nova help' for a list of available commands")
+        print("---------------------GENERAL INFO----------------------")
+        self.stats.display_ram_usage()
+        print("------------------------SYSTEM-------------------------")
+        self.stats.display_system_overview()
+        # print("-------------------------LOG---------------------------")
+        # # Add logs if provided via parameters
+        # if info_log:
+        #     self.logger.info("root", info_log)
+        # if debug_log:
+        #     self.logger.debug("root", debug_log)
+        # if warn_log:
+        #     self.logger.warning("root", warn_log)
+        # if error_log:
+        #     self.logger.error("root", error_log)
+        
+        # Display the most recent logs
+        # self.logger.display_logs()
+
+        print("----------------------ASSISTANT------------------------")
+        self.stats.display_date_and_time()
         print("="*50)
-        print("\n")
+        # print("Welcome to NOVA - Your Python-Powered AI Assistant!")
+        # print("Remember to start your commands with 'Nova'")
+        # print("For example: 'Nova tell me the time'")
+        # print("Type 'Nova help' for a list of available commands")
+        # print("="*50)
+        # print("\n")
 
     def _handle_help(self, _: str) -> str:
         """Handle the help command"""
