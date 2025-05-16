@@ -55,16 +55,17 @@ N.O.V.A uses third-party APIs for speech recognition, web searches, weather fore
 
 ### Start the Assistant
 <div>
-  <img src="https://github.com/RiyaTorgal/N.O.V.A/blob/main/img/NOVA_Output.png" width="800" />
+  <img src="https://github.com/RiyaTorgal/N.O.V.A/blob/main/img/NOVA_Output1.png" width="900" />
 </div>
+
 - Start the Assistant service
 
-   ```bash
+```bash
    python -u "your\Folder\Location\main.py"
 ```
 ## Decision Model
 <div>
-  <img src="https://github.com/RiyaTorgal/N.O.V.A/blob/main/img/decision%20model.png" width="400" />
+  <img src="https://github.com/RiyaTorgal/N.O.V.A/blob/main/img/decision%20model.png" width="350" />
 </div>
 
 ## Contributions
