@@ -14,10 +14,9 @@ from src.services.weather import WeatherAPI
 from src.services.ai_implementation import GeminiSearch
 from src.utils.command_history import DatabaseCommandHistory
 from src.dB.database import Database
-from src.utils.stats import SystemMonitor
-# from src.utils.stats import Logger
-# from logs import NovaLogger as Logger
-# import logging
+from src.stats.system_monitor import SystemMonitor
+from src.stats.system_monitor import Logger
+from src.stats.connection_monitor import ConnectionMonitor
 
 
 dotenv_path = os.path.join(os.path.dirname(__file__), 'config', '.env')
@@ -32,7 +31,8 @@ class NovaAssistant:
         self.voice = VoiceAssistant()
         self.weather = WeatherAPI(self.api_key)
         self.gemini_api_key = os.environ.get("GEMINI")  # Make sure you have a GEMINI env variable
-        # self.logger = Logger(log_to_console=True, log_to_file=True, log_file="nova_logs.txt")
+        self.logger = Logger(log_to_console=True, log_to_file=True, log_file="nova_logs.txt")
+        self.connection_monitor = ConnectionMonitor()
         self.input_mode = "TEXT"  # Default input mode
         self.speech_enabled = False
         try:
@@ -59,6 +59,8 @@ class NovaAssistant:
             "clear history": self._handle_clear_history,
             "ask": self._handle_ai_query,
             "define": self._handle_define,
+            "status": self._handle_system_status,
+            "connection": self._handle_connection_status,
         }
         self.db_config = {
             'host': os.environ.get("DB_HOST", "localhost"),
@@ -71,6 +73,61 @@ class NovaAssistant:
         self.command_history = DatabaseCommandHistory(self.db_config, self.db)
         self.initialized = False
         self.setup_signal_handlers()
+        self._log_system_info()
+
+    def _log_system_info(self, display=True):
+        """Log system information during startup"""
+        system_info = self.stats.get_system_info()
+        for key, value in system_info.items():
+            self.logger.info("system", f"{key}: {value}")
+        
+        # Check and log connection status
+        connection_status = self.connection_monitor.check_internet_connection()
+        self.logger.info("network", f"Internet connection: {'Available' if connection_status else 'Unavailable'}")
+        
+        # Check and log available input devices
+        input_devices = self.connection_monitor.check_input_device_availability()
+        for device, available in input_devices.items():
+            self.logger.info("devices", f"{device.capitalize()} available: {available}")
+        
+        # Check and log text-to-speech availability
+        tts_available = self.connection_monitor.check_text_to_speech_availability()
+        self.logger.info("devices", f"Text-to-speech available: {tts_available}")
+        
+    def _handle_system_status(self, _: str) -> str:
+        """Handle system status check command"""
+        # Get system information
+        system_info = self.stats.get_system_info()
+        ram_usage = self.stats.get_ram_usage()
+        
+        # Format the response
+        response = "System Status:\n"
+        response += f"RAM Usage: {ram_usage:.2f} GB\n"
+        for key, value in system_info.items():
+            response += f"{key}: {value}\n"
+            
+        # Log that system status was checked
+        self.logger.info("commands", "System status check performed")
+        return response
+    
+    def _handle_connection_status(self, _: str) -> str:
+        """Handle connection status check command"""
+        # Get complete connection status
+        status = self.connection_monitor.get_complete_status()
+        
+        # Format the response
+        response = "Connection Status:\n"
+        response += f"Internet Connection: {'Available' if status['internet_connection'] else 'Unavailable'}\n"
+        
+        # Include some network stats if available
+        if status['network_stats']:
+            response += "\nNetwork Statistics:\n"
+            response += f"  - Bytes Sent: {status['network_stats']['bytes_sent']} bytes\n"
+            response += f"  - Bytes Received: {status['network_stats']['bytes_recv']} bytes\n"
+            
+        # Log that connection status was checked
+        self.logger.info("commands", "Connection status check performed")
+        return response
 
     def initialize_database(self):
         """Initialize the database schema"""
@@ -147,34 +204,17 @@ class NovaAssistant:
         print(" █████  ░░█████ ░░░███████░      ░░███      █████   █████ ")
         print(" ░░░░░    ░░░░░    ░░░░░░░         ░░░      ░░░░░   ░░░░░ ")
         print("NOTE: Ctrl + C if you want to quit")
-        print("="*50)
-        print("---------------------GENERAL INFO----------------------")
+        print("="*60)
+        print("-----------------------GENERAL INFO------------------------")
         self.stats.display_ram_usage()
-        print("------------------------SYSTEM-------------------------")
+        print("--------------------------SYSTEM---------------------------")
         self.stats.display_system_overview()
-        # print("-------------------------LOG---------------------------")
-        # # Add logs if provided via parameters
-        # if info_log:
-        #     self.logger.info("root", info_log)
-        # if debug_log:
-        #     self.logger.debug("root", debug_log)
-        # if warn_log:
-        #     self.logger.warning("root", warn_log)
-        # if error_log:
-        #     self.logger.error("root", error_log)
-        
-        # Display the most recent logs
+        print("---------------------------LOG-----------------------------")
         # self.logger.display_logs()
-
-        print("----------------------ASSISTANT------------------------")
+        self.logger.display_logs(exclude_sources=["system"])
+        print("------------------------ASSISTANT--------------------------")
         self.stats.display_date_and_time()
-        print("="*50)
-        # print("Welcome to NOVA - Your Python-Powered AI Assistant!")
-        # print("Remember to start your commands with 'Nova'")
-        # print("For example: 'Nova tell me the time'")
-        # print("Type 'Nova help' for a list of available commands")
-        # print("="*50)
-        # print("\n")
+        print("="*60)
 
     def _handle_help(self, _: str) -> str:
         """Handle the help command"""

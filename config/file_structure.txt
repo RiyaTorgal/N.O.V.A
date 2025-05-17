@@ -10,6 +10,8 @@ File/Folder structure of the project:
     ├── dB-Schema/
     │   ├── Note Db Schema              # Database Schema for Note-taking functionality
     │   └── Command History Db Schema   # Database Schema for Command history tracking functionality
+    │ 
+    ├── img/                            # Public folder containing all the images for README.md file
     │
     ├── src/
     │   ├── __init__.py
@@ -35,6 +37,11 @@ File/Folder structure of the project:
     │   │   ├── notes.py                # Notes creation handling
     │   │   └── weather.py              # Weather-related functionality
     │   │
+    │   ├── stats/
+    │   │   ├── __init__.py
+    │   │   ├── connection_monitor.py   # Monitoring connection states and hardware availability
+    │   │   └── system_monitor.py                # Checking and displaying stats on CLI
+    │   │
     │   └── utils/
     │       ├── __init__.py
     │       └── command_history.py      # Command history implementation
@@ -44,3 +51,4 @@ File/Folder structure of the project:
     ├── README.md                       # GitHub README file
     ├── .gitignore                      # Files to be ignored while commit command
     └── LICENSE                         # Information about the LICENSE
+    
