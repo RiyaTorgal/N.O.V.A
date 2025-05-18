@@ -25,6 +25,8 @@
 - Searches specific command (e.g., `Nova search weather`)
 - Help command prints all skills with descriptions (e.g., `Nova help`)
 - Tells what functions it can perform (e.g., `Nova functions`)
+- Tell the system status and information (e.g., `Nova status`)
+- Tells network availability and related statistics (e.g., `Nova connection`)
 
 ## Assistant Features
 
@@ -55,7 +57,7 @@ N.O.V.A uses third-party APIs for speech recognition, web searches, weather fore
 
 ### Start the Assistant
 <div>
-  <img src="https://github.com/RiyaTorgal/N.O.V.A/blob/main/img/NOVA_Output1.png" width="900" />
+  <img src="https://github.com/RiyaTorgal/N.O.V.A/blob/main/img/NOVA_Output2.png"/>
 </div>
 
 - Start the Assistant service
