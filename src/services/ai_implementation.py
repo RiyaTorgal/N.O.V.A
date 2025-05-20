@@ -12,7 +12,7 @@ class GeminiSearch:
             raise ValueError("API key is required for GeminiSearch.")
         genai.configure(api_key=self.api_key)
 
-        self.model = genai.GenerativeModel('gemini-1.5-pro')
+        self.model = genai.GenerativeModel('gemini-2.0-flash')
     
     def search(self,query:str) -> str:
         """Process a search query using the Gemini AI model and return an informitive response."""

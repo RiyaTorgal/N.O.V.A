@@ -56,6 +56,5 @@ class VoiceAssistant:
                 return f"Error: {str(e)}"
 
     def speak(self, text: str) -> None:
-        print(f"Assistant: {text}")
         self.engine.say(text)
         self.engine.runAndWait()

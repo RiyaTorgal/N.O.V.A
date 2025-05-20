@@ -40,7 +40,7 @@ File/Folder structure of the project:
     │   ├── stats/
     │   │   ├── __init__.py
     │   │   ├── connection_monitor.py   # Monitoring connection states and hardware availability
-    │   │   └── system_monitor.py                # Checking and displaying stats on CLI
+    │   │   └── system_monitor.py       # Checking and displaying stats on CLI
     │   │
     │   └── utils/
     │       ├── __init__.py
