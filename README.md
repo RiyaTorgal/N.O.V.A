@@ -57,8 +57,9 @@ N.O.V.A uses third-party APIs for speech recognition, web searches, weather fore
 
 ### Start the Assistant
 <div>
-  <img src="https://github.com/RiyaTorgal/N.O.V.A/blob/main/img/NOVA_Output2.png"/>
+  <img src="https://github.com/RiyaTorgal/N.O.V.A/blob/main/img/NOVA_Rich_Output.png" width="800"/>
 </div>
+<br/>
 
 - Start the Assistant service
 
