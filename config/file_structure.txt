@@ -13,6 +13,13 @@ File/Folder structure of the project:
     │ 
     ├── img/                            # Public folder containing all the images for README.md file
     │
+    ├── main/                           # New directory for main components
+    │   ├── __init__.py
+    │   ├── app.py                      # Main application class (NovaAssistant)
+    │   ├── command_handlers.py         # All command handling methods
+    │   ├── ui_manager.py               # UI and display related functionality
+    │   └── signal_manager.py           # Signal handling and cleanup
+    │
     ├── src/
     │   ├── __init__.py
     │   ├── core/
