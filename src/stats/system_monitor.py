@@ -25,7 +25,7 @@ class Logger:
     }
     RESET = "\033[0m"
     
-    def __init__(self, log_to_console=True, log_to_file=True, log_file="nova_logs.txt", max_logs=100):
+    def __init__(self, log_to_console=True, log_to_file=False, max_logs=100, log_file= "logs.txt"):
         """
         Initialize the logger with configuration options
         
@@ -38,6 +38,7 @@ class Logger:
         self.log_to_file = log_to_file
         self.log_file = log_file
         self.max_logs = max_logs
+
         self.logs: List[Dict] = []
         
         # Create log directory if it doesn't exist
@@ -217,7 +218,7 @@ class Logger:
 
 
 class SystemMonitor:
-    def __init__(self, log_to_console=True, log_to_file=True):
+    def __init__(self, log_to_console=True, log_to_file=False):
         """Initialize SystemMonitor with optional logger"""
         self.logger = Logger(log_to_console=log_to_console, log_to_file=log_to_file)
         self.start_time = datetime.datetime.now()
