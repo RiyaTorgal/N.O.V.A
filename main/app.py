@@ -270,6 +270,18 @@ class NovaAssistant:
                 if command in ["exit", "quit", "bye"]:
                     self.signal_manager.cleanup()
                     break
+
+                if command.startswith("open ") and ("song" in command or "video" in command):
+                    try:
+                        response = self.assistant.handle_open_media_command(command)
+                        self.save_response(command, response, "completed")
+                        self.voice.speak(response)
+                    except Exception as e:
+                        error_msg = f"Error: {str(e)}"
+                        self.console.print(f"[red]{error_msg}[/red]")
+                        self.save_response(command, error_msg, "failed")
+                        self.voice.speak("There was an error opening the media.")
+                    continue
                 
                 # Display the command
                 self.console.print(f"[dim]Command:[/dim] [bold green]{command}[/bold green]")
