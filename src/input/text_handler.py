@@ -78,21 +78,26 @@ class TypedInputHandler:
         return """
 Available Commands (start with 'Nova'):
 ---------------------------------------
-- Nova open youtube.com        : Opens specified website
-- Nova open notepad            : Opens specified application
+- Nova open [website]          : Opens specified website
+- Nova open [application]      : Opens specified application
 - Nova tell me the time        : Shows current time
 - Nova tell me the date        : Shows current date
 - Nova calculate 2 + 2         : Calculates mathematical expression
 - Nova tell me the weather of [city] : Shows weather for specified city
 - Nova ask [question]          : Search for information using Gemini AI
 - Nova define [term]           : Get a definition of a term using Gemini AI
+- Nova open [query] song/video on [platform] : Opens a song or video on a specified platform
+- Nova status                  : Tells the system status and information
+- Nova connection              : Tells network availability and related statistics
 
 Additional Commands:
 ------------------
-- help    : Shows this help message
-- clear   : Clears the screen
-- history : Shows command history
-- exit    : Exits the assistant
+- help             : Shows this help message
+- clear            : Clears the screen
+- history          : Shows command history
+- search [keyword] : Searches for the command having the occurance of the keyword
+- clear history    : Clears the entire command history
+- exit             : Exits the assistant
 
 Tips:
 ----
@@ -124,9 +129,17 @@ supports: ["addition", "subtraction", "multiplication", "division"]
 description: "Open websites or applications",
 examples: "Nova open youtube.com" or "Nova open notepad"
 -------------------------------------------
-5. I can answer your search queries using gemini AI
+5. I can open any specified song or video on platforms like YouTube, Spotify, etc.
+description: "Open a song or video on a specified platform",
+examples: "Nova open Blinding Ligts song on spotify" or "Nova open Rickroll video on youtube"
+-------------------------------------------
+6. I can answer your search queries using gemini AI
 description: "Answer search queries using Gemini AI",
 examples: "Nova ask what is artificial intelligence" or "Nova define Blockchain"
+-------------------------------------------
+7. I can manipulate the command history by specified commands
+description: "Manipulate the contents of the command history table through commands",
+examples: "Nova clear history" or "Nova search weather"
 -------------------------------------------
 """
 
