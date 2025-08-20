@@ -41,7 +41,13 @@ File/Folder structure of the project:
     │   │
     │   ├── sevices/
     │   │   ├── __init__.py
-    │   │   ├── notes.py                # Notes creation handling
+    │   │   ├── notes/
+    │   │   │   ├── __init__.py
+    │   │   │   ├── MenuUI.py           # User Interface for Menu List of Stored Notes
+    │   │   │   ├── MainUI.py           # User Interface for Note Creation, and Updation
+    │   │   │   └── service.py          # Database Connections and queries of Notes CRUD Operations 
+    │   │   │    
+    │   │   ├── ai_implementation.py    # Advanced query handling using AI        
     │   │   └── weather.py              # Weather-related functionality
     │   │
     │   ├── stats/
