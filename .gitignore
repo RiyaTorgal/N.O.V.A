@@ -1,3 +1,10 @@
 __pycache__
 .env
 nova_logs.txt
+/.venv
+/ai-models
+/data
+/Documentation
+DevPlan.txt
+improvements.txt
+test.py

@@ -2,6 +2,8 @@ from typing import List, Optional
 from dataclasses import dataclass
 from enum import Enum
 
+import re
+
 class InputMethod(Enum):
     SPEAK = "speak"
     TYPE = "type"
@@ -19,10 +21,15 @@ class CommandParser:
         Parse command to check if it starts with 'Nova' and extract the actual command
         Returns: (is_valid, command)
         """
+        # text = text.lower().strip()
+        # if text.startswith('nova'):
+        #     # Get everything after 'nova' and strip whitespace
+        #     return True, text[4:].strip()
+        # return False, text
         text = text.lower().strip()
-        if text.startswith('nova'):
-            # Get everything after 'nova' and strip whitespace
-            return True, text[4:].strip()
+        match = re.match(r"^nova\b[\s,.:;!?-]*", text)
+        if match:
+            return True, text[match.end():].strip()
         return False, text
 
     @staticmethod

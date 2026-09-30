@@ -305,7 +305,7 @@ class SystemMonitor:
             self.logger.warning("SystemMonitor", "Database connectivity not available")
             
         # Check Gemini API
-        if os.environ.get("GEMINI"):
+        if os.environ.get("GEMINI_API_KEY"):
             services["gemini"] = True
             self.logger.debug("SystemMonitor", "Gemini API key available")
         else:
