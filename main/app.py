@@ -16,13 +16,15 @@ from src.core.assistant import Assistant
 from src.input.text_handler import TypedInputHandler
 from src.input.voice_handler import VoiceAssistant
 from src.services.weather import WeatherAPI
-from src.services.ai_implementation import GeminiSearch
+# from src.services.gemini_implementation import GeminiSearch
+from src.services.ollama_implementation import get_search_engine
 from src.utils.command_history import DatabaseCommandHistory
 from src.dB.database import Database
 from src.stats.system_monitor import SystemMonitor
 from src.stats.system_monitor import Logger
 from src.stats.connection_monitor import ConnectionMonitor
 from main.command_handler import CommandHandlers
+from main.llm_router import LLMRouter
 from main.ui import UIManager
 from main.signal_manager import SignalManager
 
@@ -39,8 +41,9 @@ class NovaAssistant:
         self.console = Console()
         
         # Load API keys and initialize components
-        self.api_key = os.environ.get("API_KEY")
+        self.api_key = os.environ.get("OPEN_WEATHER_API_KEY")
         self.gemini_api_key = os.environ.get("GEMINI")
+
         
         # Initialize core components
         self.assistant = Assistant()
@@ -56,13 +59,19 @@ class NovaAssistant:
         # Initialize UI manager
         self.ui = UIManager()
         
-        # Initialize Gemini AI search if API key is available
+        # # Initialize Gemini AI search if API key is available
+        # try:
+        #     if self.gemini_api_key:
+        #         self.gemini_search = GeminiSearch(self.gemini_api_key)
+        #     else:
+        #         self.console.print("[yellow]Warning: Gemini API key not found. AI search functionality will be disabled.[/yellow]")
+        #         self.gemini_search = None
+        # Initialize AI search (local Ollama by default, Gemini optional)
         try:
-            if self.gemini_api_key:
-                self.gemini_search = GeminiSearch(self.gemini_api_key)
-            else:
-                self.console.print("[yellow]Warning: Gemini API key not found. AI search functionality will be disabled.[/yellow]")
-                self.gemini_search = None
+            self.gemini_search = get_search_engine()
+        except Exception as e:
+            self.console.print(f"[red]Error initializing AI search: {e}[/red]")
+            self.gemini_search = None
         except Exception as e:
             self.console.print(f"[red]Error initializing Gemini search: {e}[/red]")
             self.gemini_search = None
@@ -80,6 +89,7 @@ class NovaAssistant:
         
         # Initialize command handlers
         self.cmd_handlers = CommandHandlers(self)
+        self.router = LLMRouter(self.cmd_handlers)
         
         # Set up signal handler
         self.signal_manager = SignalManager(self)
@@ -201,11 +211,17 @@ class NovaAssistant:
                 return response
         
         # Check if any command keyword is contained within the full command
-        for cmd_key in command_map:
-            if cmd_key in command and cmd_key not in ["ask", "define", "search", "calculate", "weather", "open"]:
-                response = command_map[cmd_key](command)
-                self.save_response(command, response, "completed")
-                return response
+        # for cmd_key in command_map:
+        #     if cmd_key in command and cmd_key not in ["ask", "define", "search", "calculate", "weather", "open"]:
+        #         response = command_map[cmd_key](command)
+        #         self.save_response(command, response, "completed")
+        #         return response
+
+        # Anything else: let the local LLM work out what the user means
+        response = self.router.route(command)
+        if response:
+            self.save_response(command, response, "completed")
+            return response
 
         # Handle unrecognized commands
         self.console.print("[red]I'm sorry, I didn't understand that command.[/red]")

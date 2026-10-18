@@ -53,7 +53,7 @@ class SignalManager:
             
             # Say goodbye
             if hasattr(self.app, 'voice'):
-                self.app.voice.speak("Goodbye!")
+                self.app.voice.speak("Goodbye")
                 
         except Exception as e:
             self.console.print(f"[red]Error during cleanup: {str(e)}[/red]")

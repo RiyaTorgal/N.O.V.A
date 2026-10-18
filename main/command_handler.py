@@ -409,7 +409,7 @@ class CommandHandlers:
             str: AI response
         """
         if not self.gemini_search:
-            return "Gemini AI is not initialized. Please check your API key."
+            return "Local AI is not initialized. Please check your API key."
             
         # Extract the query from the command
         match = re.search(r'ask\s+(.*)', command, re.IGNORECASE)
