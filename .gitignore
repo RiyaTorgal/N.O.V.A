@@ -2,6 +2,9 @@ __pycache__
 .env
 nova_logs.txt
 /.venv
+/.venv-tts
+/pip-cache
+/Temp
 /ai-models
 /data
 /Documentation

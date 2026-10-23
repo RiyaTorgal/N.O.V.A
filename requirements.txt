@@ -1,20 +1,19 @@
+--extra-index-url https://download.pytorch.org/whl/cu121
+
+# TTS / voice
+torch==2.5.1+cu121
+torchaudio==2.5.1+cu121
+transformers==4.57.6
+coqui-tts==0.27.5
+sounddevice
+soundfile
+pyttsx3
+SpeechRecognition
 PyAudio==0.2.14
-wikipedia==1.4.0
-pyttsx3==2.90
-SpeechRecognition==3.10.1
+python-dotenv
+
+# N.O.V.A (keep only what the scan shows you import)
+ollama
 requests==2.31.0
-python-dotenv==1.0.1
-mysql-connector-python==9.1.0
-python-dotenv==1.0.1
-tkinter-page==0.0.5
-rich==13.9.3
-requests==2.31.0
-nltk==3.9.1 
-textblob==0.19.0
-google-ai-generativelanguage==0.6.10
-google-api-core==2.22.0
-google-api-python-client==2.151.0
-google-auth==2.35.0
-google-auth-httplib2==0.2.0
-google-genai==1.8.0
-google-generativeai==0.8.3
+google-generativeai
+mysql-connector-python
