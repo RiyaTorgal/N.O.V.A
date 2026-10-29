@@ -333,8 +333,56 @@ class SafeTTS(TTSEngine):
 
 _ENGINE: TTSEngine | None = None
 
+import threading, time
 
-def create_tts_engine() -> TTSEngine:
+_engine = None
+_lock = threading.Lock()
+
+
+class _LazyTTS:
+    """Returns instantly; XTTS loads in a background thread.
+    Any attribute access (speak, synthesize, ...) waits until it's ready."""
+
+    def __init__(self, builder):
+        self._ready = threading.Event()
+        self._impl = None
+        self._error = None
+        threading.Thread(target=self._load, args=(builder,),
+                         daemon=True, name="tts-loader").start()
+
+    def _load(self, builder):
+        t = time.perf_counter()
+        try:
+            self._impl = builder()
+            print(f"[TTS] ready in {time.perf_counter() - t:.1f}s")
+        except Exception as e:
+            self._error = e
+        finally:
+            self._ready.set()
+
+    def is_ready(self):
+        return self._ready.is_set()
+
+    def wait(self):
+        self._ready.wait()
+        if self._error:
+            raise self._error
+        return self._impl
+
+    def __getattr__(self, name):
+        if name.startswith("_"):
+            raise AttributeError(name)
+        return getattr(self.wait(), name)
+
+
+def create_tts_engine():
+    global _engine
+    with _lock:
+        if _engine is None:
+            _engine = _LazyTTS(_build_engine)
+        return _engine
+
+def _build_engine() -> TTSEngine:
     """Return the ONE shared engine (built on first call, reused after).
 
     Your log showed the engine being created twice at startup; with XTTS that
