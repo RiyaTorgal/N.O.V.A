@@ -2,6 +2,9 @@ File/Folder structure of the project:
 
     Nova/
     │
+    ├── assets/
+    │   └── greeting.wav                        
+    │
     ├── config/
     │   ├── .env                        # Environmental variables
     │   ├── .env.example                # Example .env file
@@ -17,8 +20,12 @@ File/Folder structure of the project:
     │   ├── __init__.py
     │   ├── app.py                      # Main application class (NovaAssistant)
     │   ├── command_handlers.py         # All command handling methods
-    │   ├── ui_manager.py               # UI and display related functionality
+    │   ├──llm_router.py                # Local llm router for the assistant
+    │   ├── ui.py                       # UI and display related functionality
     │   └── signal_manager.py           # Signal handling and cleanup
+    │
+    ├── scripts/
+    │   └── make_greeting.py         # Text input handling
     │
     ├── src/
     │   ├── __init__.py
@@ -39,15 +46,19 @@ File/Folder structure of the project:
     │   │   ├── voice_handler.py        # Voice input handling
     │   │   └── text_handler.py         # Text input handling
     │   │
-    │   ├── sevices/
+    │   ├── output/
+    │   │   ├── greeting.py        # Voice input handling
+    │   │   └── tts_engine.py         # Text input handling
+    │   │
+    │   ├── services/
     │   │   ├── __init__.py
     │   │   ├── notes/
     │   │   │   ├── __init__.py
     │   │   │   ├── MenuUI.py           # User Interface for Menu List of Stored Notes
-    │   │   │   ├── MainUI.py           # User Interface for Note Creation, and Updation
-    │   │   │   └── service.py          # Database Connections and queries of Notes CRUD Operations 
+    │   │   │   └── MainUI.py           # User Interface for Note Creation, and Updations 
     │   │   │    
-    │   │   ├── ai_implementation.py    # Advanced query handling using AI        
+    │   │   ├── gemini_implementation.py    # Advanced query handling using GeminiAPI
+    │   │   ├── ollama_implementation.py    # Advanced query handling using LocalLLM Ollama         
     │   │   └── weather.py              # Weather-related functionality
     │   │
     │   ├── stats/
@@ -57,10 +68,12 @@ File/Folder structure of the project:
     │   │
     │   └── utils/
     │       ├── __init__.py
+    │       ├── speech.py               # Script to clean the speech input
     │       └── command_history.py      # Command history implementation
     │
     ├── main.py                         # Main executable file
     ├── requirements.txt                # Contains required packages
+    ├── requirements-tts.txt                # Contains required packages    
     ├── README.md                       # GitHub README file
     ├── .gitignore                      # Files to be ignored while commit command
     └── LICENSE                         # Information about the LICENSE

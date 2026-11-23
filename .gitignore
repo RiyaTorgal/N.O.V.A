@@ -3,6 +3,7 @@ __pycache__
 nova_logs.txt
 /.venv
 /.venv-tts
+tts_server/.starting
 /pip-cache
 /Temp
 /ai-models
